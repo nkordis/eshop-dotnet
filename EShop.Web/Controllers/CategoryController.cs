@@ -3,18 +3,11 @@ using EShop.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EShop.Web.Controllers;
-public class CategoryController : Controller
+public class CategoryController(ApplicationDbContext _applicationDbContext) : Controller
 {
-    private readonly ApplicationDbContext _applicationDbContext;
-
-    public CategoryController(ApplicationDbContext applicationDbContext)
-    {
-        _applicationDbContext = applicationDbContext;
-    }
-
     public IActionResult Index()
     {
-        List<Category> categories = _applicationDbContext.Categories.ToList();
+        List<Category> categories = [.. _applicationDbContext.Categories];
 
         return View(categories);
     }
@@ -22,6 +15,14 @@ public class CategoryController : Controller
     public IActionResult Create()
     {
         return View();
+    }
+    [HttpPost]
+    public IActionResult Create(Category category)
+    {
+        _applicationDbContext.Categories.Add(category);
+        _applicationDbContext.SaveChanges();
+
+        return RedirectToAction("Index");
     }
 }
 
