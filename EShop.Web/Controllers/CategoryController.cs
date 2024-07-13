@@ -10,13 +10,18 @@ public class CategoryController : Controller
     public CategoryController(ApplicationDbContext applicationDbContext)
     {
         _applicationDbContext = applicationDbContext;
-    } 
+    }
 
     public IActionResult Index()
     {
         List<Category> categories = _applicationDbContext.Categories.ToList();
 
         return View(categories);
+    }
+
+    public IActionResult Create()
+    {
+        return View();
     }
 }
 
