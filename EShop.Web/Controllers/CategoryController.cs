@@ -19,10 +19,14 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
     [HttpPost]
     public IActionResult Create(Category category)
     {
-        _applicationDbContext.Categories.Add(category);
-        _applicationDbContext.SaveChanges();
+        if (ModelState.IsValid)
+        {
+            _applicationDbContext.Categories.Add(category);
+            _applicationDbContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
-        return RedirectToAction("Index");
+        return View();
     }
 }
 
