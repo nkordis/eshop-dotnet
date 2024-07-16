@@ -38,7 +38,7 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
 
         Category? category = _applicationDbContext.Categories.Find(id);
 
-        if (category == null) 
+        if (category == null)
         {
             return NotFound();
         }
@@ -56,6 +56,35 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
         }
 
         return View();
+    }
+
+    public IActionResult Delete(int? id)
+    {
+        if (id == null || id == 0)
+        {
+            return NotFound();
+        }
+
+        Category? category = _applicationDbContext.Categories.Find(id);
+
+        if (category == null)
+        {
+            return NotFound();
+        }
+
+        return View(category);
+    }
+    [HttpPost, ActionName("Delete")]
+    public IActionResult DeletePost(int? id)
+    {
+        Category? category = _applicationDbContext.Categories.Find(id);
+        if (category == null)
+        {
+            return NotFound();
+        }
+        _applicationDbContext.Remove(category);
+        _applicationDbContext.SaveChanges();
+        return RedirectToAction("Index");
     }
 }
 
