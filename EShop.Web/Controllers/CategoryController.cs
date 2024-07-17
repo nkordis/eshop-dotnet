@@ -23,6 +23,7 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
         {
             _applicationDbContext.Categories.Add(category);
             _applicationDbContext.SaveChanges();
+            TempData["success"] = "Category created successfully";
             return RedirectToAction("Index");
         }
 
@@ -52,6 +53,7 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
         {
             _applicationDbContext.Categories.Update(category);
             _applicationDbContext.SaveChanges();
+            TempData["success"] = "Category updated successfully";
             return RedirectToAction("Index");
         }
 
@@ -84,6 +86,7 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
         }
         _applicationDbContext.Remove(category);
         _applicationDbContext.SaveChanges();
+        TempData["success"] = "Category deleted successfully";
         return RedirectToAction("Index");
     }
 }
