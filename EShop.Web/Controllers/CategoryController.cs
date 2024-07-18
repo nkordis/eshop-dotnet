@@ -1,5 +1,5 @@
-﻿using EShop.Web.Data;
-using EShop.Web.Models;
+﻿using EShop.DataAccess.Data;
+using EShop.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EShop.Web.Controllers;

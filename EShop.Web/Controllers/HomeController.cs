@@ -1,4 +1,4 @@
-using EShop.Web.Models;
+using EShop.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
