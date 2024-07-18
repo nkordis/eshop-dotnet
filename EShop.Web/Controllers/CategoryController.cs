@@ -1,13 +1,13 @@
-﻿using EShop.DataAccess.Data;
+﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EShop.Web.Controllers;
-public class CategoryController(ApplicationDbContext _applicationDbContext) : Controller
+public class CategoryController(ICategoryRepository categoryRepository) : Controller
 {
     public IActionResult Index()
     {
-        List<Category> categories = [.. _applicationDbContext.Categories];
+        List<Category> categories = [.. categoryRepository.GetAll()];
 
         return View(categories);
     }
@@ -21,8 +21,8 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
     {
         if (ModelState.IsValid)
         {
-            _applicationDbContext.Categories.Add(category);
-            _applicationDbContext.SaveChanges();
+            categoryRepository.Add(category);
+            categoryRepository.Save();
             TempData["success"] = "Category created successfully";
             return RedirectToAction("Index");
         }
@@ -37,7 +37,7 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
             return NotFound();
         }
 
-        Category? category = _applicationDbContext.Categories.Find(id);
+        Category? category = categoryRepository.Get(c => c.Id == id);
 
         if (category == null)
         {
@@ -51,8 +51,8 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
     {
         if (ModelState.IsValid)
         {
-            _applicationDbContext.Categories.Update(category);
-            _applicationDbContext.SaveChanges();
+            categoryRepository.Update(category);
+            categoryRepository.Save();
             TempData["success"] = "Category updated successfully";
             return RedirectToAction("Index");
         }
@@ -67,7 +67,7 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
             return NotFound();
         }
 
-        Category? category = _applicationDbContext.Categories.Find(id);
+        Category? category = categoryRepository.Get(c => c.Id == id);
 
         if (category == null)
         {
@@ -79,13 +79,13 @@ public class CategoryController(ApplicationDbContext _applicationDbContext) : Co
     [HttpPost, ActionName("Delete")]
     public IActionResult DeletePost(int? id)
     {
-        Category? category = _applicationDbContext.Categories.Find(id);
+        Category? category = categoryRepository.Get(c => c.Id == id);
         if (category == null)
         {
             return NotFound();
         }
-        _applicationDbContext.Remove(category);
-        _applicationDbContext.SaveChanges();
+        categoryRepository.Remove(category);
+        categoryRepository.Save();
         TempData["success"] = "Category deleted successfully";
         return RedirectToAction("Index");
     }
