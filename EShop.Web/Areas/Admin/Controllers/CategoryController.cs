@@ -2,7 +2,9 @@
 using EShop.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EShop.Web.Controllers;
+namespace EShop.Web.Areas.Admin.Controllers;
+
+[Area("Admin")]
 public class CategoryController(IUnitOfWork unitOfWork) : Controller
 {
     public IActionResult Index()
