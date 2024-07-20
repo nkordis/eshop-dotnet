@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EShop.Models.Models;
 
@@ -16,5 +17,9 @@ public class Product
     [Display(Name = "List Price")]
     [Range(1,100000)]
     public decimal ListPrice { get; set; }
+
+    public int CategoryId { get; set; }
+    [ForeignKey("CategoryId")]
+    public Category Category { get; set; }
 }
 
