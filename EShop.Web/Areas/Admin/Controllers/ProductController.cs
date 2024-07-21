@@ -1,6 +1,8 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
+using EShop.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EShop.Web.Areas.Admin.Controllers;
 
@@ -10,26 +12,44 @@ public class ProductController(IUnitOfWork unitOfWork) : Controller
     public IActionResult Index()
     {
         List<Product> products = [.. unitOfWork.Product.GetAll()];
-
         return View(products);
     }
 
     public IActionResult Create()
     {
-        return View();
+        IEnumerable<SelectListItem> CategoryList = unitOfWork.Category.GetAll().Select(c => new SelectListItem
+        {
+            Text = c.Name,
+            Value = c.Id.ToString()
+        });
+
+        ProductVM productVM = new()
+        {
+            CategoryList = CategoryList,
+            Product = new Product()
+        };
+
+        return View(productVM);
     }
     [HttpPost]
-    public IActionResult Create(Product product)
+    public IActionResult Create(ProductVM productVM)
     {
         if (ModelState.IsValid)
         {
-            unitOfWork.Product.Add(product);
+            unitOfWork.Product.Add(productVM.Product);
             unitOfWork.Save();
             TempData["success"] = "Product created successfully";
             return RedirectToAction("Index");
         }
-
-        return View();
+        else
+        {
+            productVM.CategoryList = unitOfWork.Category.GetAll().Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            });
+            return View(productVM);
+        }
     }
 
     public IActionResult Edit(int? id)

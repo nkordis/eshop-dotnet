@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EShop.Models.Models;
@@ -15,12 +16,14 @@ public class Product
     public string Size { get; set; }
     [Required]
     [Display(Name = "List Price")]
-    [Range(1,100000)]
+    [Range(1, 100000)]
     public decimal ListPrice { get; set; }
 
     public int CategoryId { get; set; }
     [ForeignKey("CategoryId")]
+    [ValidateNever]
     public Category Category { get; set; }
+    [ValidateNever]
     public string ImageUrl { get; set; }
 }
 
