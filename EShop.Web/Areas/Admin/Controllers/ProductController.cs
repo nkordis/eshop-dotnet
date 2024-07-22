@@ -1,13 +1,14 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
 using EShop.Models.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EShop.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
-public class ProductController(IUnitOfWork unitOfWork) : Controller
+public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWork unitOfWork) : Controller
 {
     public IActionResult Index()
     {
@@ -31,10 +32,24 @@ public class ProductController(IUnitOfWork unitOfWork) : Controller
         return View(productVM);
     }
     [HttpPost]
-    public IActionResult Upsert(ProductVM productVM, IFormFile? formFile)
+    public IActionResult Upsert(ProductVM productVM, IFormFile? file)
     {
         if (ModelState.IsValid)
         {
+            string wwwRootPath = webHostEnviroment.WebRootPath;
+            if (file != null)
+            {
+                string filename = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string productPath = Path.Combine(wwwRootPath, @"images\product");
+
+                using (var fileStream = new FileStream(Path.Combine(productPath, filename), FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+
+                productVM.Product.ImageUrl = @"\images\product\" + filename;
+            }
+
             unitOfWork.Product.Add(productVM.Product);
             unitOfWork.Save();
             TempData["success"] = "Product created successfully";
