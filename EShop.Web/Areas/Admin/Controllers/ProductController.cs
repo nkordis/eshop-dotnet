@@ -90,6 +90,7 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
         List<Product> objProductList = [.. unitOfWork.Product.GetAll(includeProperties: "Category")];
         return Json(new { data = objProductList });
     }
+    [HttpDelete]
     public IActionResult Delete(int? id)
     {
         Product? product = unitOfWork.Product.Get(c => c.Id == id);
@@ -97,7 +98,7 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
         {
             return Json(new {success = false, message="Error while deleting"});
         }
-        var oldImagePath = Path.Combine(webHostEnviroment.ContentRootPath, product.ImageUrl.TrimStart('\\'));
+        var oldImagePath = Path.Combine(webHostEnviroment.WebRootPath, product.ImageUrl.TrimStart('\\'));
         if (System.IO.File.Exists(oldImagePath))
         {
             System.IO.File.Delete(oldImagePath);
