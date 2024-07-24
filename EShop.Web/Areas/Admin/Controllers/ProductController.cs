@@ -81,35 +81,6 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
             return View(productVM);
         }
     }
-    public IActionResult Delete(int? id)
-    {
-        if (id == null || id == 0)
-        {
-            return NotFound();
-        }
-
-        Product? product = unitOfWork.Product.Get(c => c.Id == id);
-
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        return View(product);
-    }
-    [HttpPost, ActionName("Delete")]
-    public IActionResult DeletePost(int? id)
-    {
-        Product? product = unitOfWork.Product.Get(c => c.Id == id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-        unitOfWork.Product.Remove(product);
-        unitOfWork.Save();
-        TempData["success"] = "Product deleted successfully";
-        return RedirectToAction("Index");
-    }
 
     #region API CALLS
 
@@ -118,6 +89,24 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
     {
         List<Product> objProductList = [.. unitOfWork.Product.GetAll(includeProperties: "Category")];
         return Json(new { data = objProductList });
+    }
+    public IActionResult Delete(int? id)
+    {
+        Product? product = unitOfWork.Product.Get(c => c.Id == id);
+        if (product == null)
+        {
+            return Json(new {success = false, message="Error while deleting"});
+        }
+        var oldImagePath = Path.Combine(webHostEnviroment.ContentRootPath, product.ImageUrl.TrimStart('\\'));
+        if (System.IO.File.Exists(oldImagePath))
+        {
+            System.IO.File.Delete(oldImagePath);
+        }
+
+        unitOfWork.Product.Remove(product);
+        unitOfWork.Save();
+       
+        return Json(new { success = true, message = "Delete Successfull" });
     }
 
     #endregion
