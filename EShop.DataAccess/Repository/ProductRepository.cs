@@ -9,6 +9,19 @@ public class ProductRepository(ApplicationDbContext db)
 {
     public void Update(Product product)
     {
-        db.Update(product);
+        var productFromDb = db.Products.FirstOrDefault(p => p.Id == product.Id);
+        if (productFromDb != null) 
+        { 
+            productFromDb.Title = product.Title;
+            productFromDb.Description = product.Description;
+            productFromDb.Size = product.Size;
+            productFromDb.ListPrice = product.ListPrice;
+            productFromDb.CategoryId = product.CategoryId;
+            
+            if(productFromDb.ImageUrl != null)
+            {
+                productFromDb.ImageUrl = product.ImageUrl;
+            }
+        }
     }
 }
