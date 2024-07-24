@@ -12,7 +12,7 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
 {
     public IActionResult Index()
     {
-        List<Product> products = [.. unitOfWork.Product.GetAll()];
+        List<Product> products = [.. unitOfWork.Product.GetAll(includeProperties: "Category")];
         return View(products);
     }
     public IActionResult Upsert(int? id)
