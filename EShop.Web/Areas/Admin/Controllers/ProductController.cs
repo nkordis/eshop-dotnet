@@ -58,6 +58,10 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
 
                 productVM.Product.ImageUrl = @"\images\product\" + filename;
             }
+            else
+            {
+                productVM.Product.ImageUrl = string.Empty; // Set to empty string if no image is uploaded
+            }
             if (productVM.Product.Id > 0)
             {
                 unitOfWork.Product.Update(productVM.Product);
@@ -85,7 +89,7 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
     #region API CALLS
 
     [HttpGet]
-    public IActionResult GetAll() 
+    public IActionResult GetAll()
     {
         List<Product> objProductList = [.. unitOfWork.Product.GetAll(includeProperties: "Category")];
         return Json(new { data = objProductList });
@@ -96,7 +100,7 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
         Product? product = unitOfWork.Product.Get(c => c.Id == id);
         if (product == null)
         {
-            return Json(new {success = false, message="Error while deleting"});
+            return Json(new { success = false, message = "Error while deleting" });
         }
         var oldImagePath = Path.Combine(webHostEnviroment.WebRootPath, product.ImageUrl.TrimStart('\\'));
         if (System.IO.File.Exists(oldImagePath))
@@ -106,7 +110,7 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
 
         unitOfWork.Product.Remove(product);
         unitOfWork.Save();
-       
+
         return Json(new { success = true, message = "Delete Successfull" });
     }
 
