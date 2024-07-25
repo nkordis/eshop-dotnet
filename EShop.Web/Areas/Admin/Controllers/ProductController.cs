@@ -60,8 +60,19 @@ public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWor
             }
             else
             {
-                productVM.Product.ImageUrl = string.Empty; // Set to empty string if no image is uploaded
+                // If no new file is uploaded and we are updating an existing product
+                if (productVM.Product.Id > 0)
+                {
+                    // Retrieve the existing product to retain the current ImageUrl
+                    var existingProduct = unitOfWork.Product.Get(p => p.Id == productVM.Product.Id);
+                    if (existingProduct != null)
+                    {
+                        productVM.Product.ImageUrl = existingProduct.ImageUrl;
+                    }
+                }
             }
+
+
             if (productVM.Product.Id > 0)
             {
                 unitOfWork.Product.Update(productVM.Product);
