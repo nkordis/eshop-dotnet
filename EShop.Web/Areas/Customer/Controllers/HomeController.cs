@@ -14,6 +14,12 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
         return View(products);
     }
 
+    public IActionResult Details(int? id)
+    {
+        Product product = unitOfWork.Product.Get(p => p.Id == id,includeProperties: "Category");
+        return View(product);
+    }
+
     public IActionResult Privacy()
     {
         return View();
