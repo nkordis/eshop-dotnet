@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ignore all files in the wwwroot/images/product directory
+/EShop.Web/wwwroot/images/product/*
