@@ -1,6 +1,8 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
 using EShop.Models.ViewModels;
+using EShop.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace EShop.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = SD.Role_Admin)]
 public class ProductController(IWebHostEnvironment webHostEnviroment, IUnitOfWork unitOfWork) : Controller
 {
     public IActionResult Index()

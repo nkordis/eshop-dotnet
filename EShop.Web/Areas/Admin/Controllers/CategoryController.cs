@@ -1,10 +1,14 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
+using EShop.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
 
 namespace EShop.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = SD.Role_Admin)]
 public class CategoryController(IUnitOfWork unitOfWork) : Controller
 {
     public IActionResult Index()
