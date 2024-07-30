@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EShop.DataAccess.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<IdentityUser>(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
