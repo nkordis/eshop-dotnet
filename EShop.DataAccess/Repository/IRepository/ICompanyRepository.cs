@@ -2,7 +2,7 @@
 
 namespace EShop.DataAccess.Repository.IRepository
 {
-    public interface ICompanyRepository
+    public interface ICompanyRepository : IRepository<Company>
     {
         void Update(Company company);
     }

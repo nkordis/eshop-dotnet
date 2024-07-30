@@ -16,6 +16,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
+        // Specify the table name for Product
+        modelBuilder.Entity<Product>().ToTable("Product");
+
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Designers", DisplayOrder = 1 },
             new Category { Id = 2, Name = "Clothing", DisplayOrder = 2 },
