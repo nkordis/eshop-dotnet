@@ -14,16 +14,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
-        // Specify the table name for Product
-        modelBuilder.Entity<Product>().ToTable("Product");
+        base.OnModelCreating(modelBuilder);        
 
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Designers", DisplayOrder = 1 },
             new Category { Id = 2, Name = "Clothing", DisplayOrder = 2 },
             new Category { Id = 3, Name = "Shoes", DisplayOrder = 3 }
             );
+
+        modelBuilder.Entity<Company>().HasData(
+            new Company { Id = 1, Name = "Tech Innovators", PhoneNumber = "1234567890", StreetAddress = "123 Tech Lane", City = "Tech City", State = "Tech State", PostalCode = "12345" },
+            new Company { Id = 2, Name = "Creative Solutions", PhoneNumber = "0987654321", StreetAddress = "456 Creative Street", City = "Creative City", State = "Creative State", PostalCode = "67890" },
+            new Company { Id = 3, Name = "Enterprise Corp", PhoneNumber = "1122334455", StreetAddress = "789 Enterprise Ave", City = "Enterprise City", State = "Enterprise State", PostalCode = "11223" }
+        );
 
         modelBuilder.Entity<Product>().HasData(
             new Product { Id = 1, Title = "Vintage Denim Jacket", Description = "A classic denim jacket in excellent condition.", Size = "M", ListPrice = 15000M, CategoryId = 1, ImageUrl = "" },

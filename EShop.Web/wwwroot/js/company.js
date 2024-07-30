@@ -14,11 +14,10 @@ function loadDataTable() {
         "columns": [
             { "data": "name", "width": "15%" },
             { "data": "phoneNumber", "width": "15%" },
-            { "data": "streetAddress", "width": "30%" },
-            { "data": "city", "width": "5%" },
+            { "data": "streetAddress", "width": "25%" },
+            { "data": "city", "width": "10%" },
             { "data": "state", "width": "10%" },
-            { "data": "phoneNumber", "width": "15%" },
-            { "data": "postalCode", "width": "15%" },
+            { "data": "postalCode", "width": "10%" },
             {
                 "data": "id",
                 "render": function (data) {
