@@ -35,8 +35,15 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
         var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
         shoppingCart.ApplicationUserId = userId;
 
-        unitOfWork.ShoppingCart.Add(shoppingCart);
-        unitOfWork.Save();
+        //check if shopping cart already exists
+        ShoppingCart cartFromDb = unitOfWork.ShoppingCart.Get(s => 
+            s.ApplicationUserId == userId && s.ProductId == shoppingCart.ProductId);
+        
+        if (cartFromDb == null)
+        {
+            unitOfWork.ShoppingCart.Add(shoppingCart);
+            unitOfWork.Save();
+        }
 
         return RedirectToAction(nameof(Index));
     }
