@@ -14,10 +14,15 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
         return View(products);
     }
 
-    public IActionResult Details(int? id)
+    public IActionResult Details(int id)
     {
-        Product product = unitOfWork.Product.Get(p => p.Id == id,includeProperties: "Category");
-        return View(product);
+        ShoppingCart cart = new()
+        {
+            Product = unitOfWork.Product.Get(p => p.Id == id,includeProperties: "Category"),
+            ProductId = id
+        };
+        
+        return View(cart);
     }
 
     public IActionResult Privacy()
