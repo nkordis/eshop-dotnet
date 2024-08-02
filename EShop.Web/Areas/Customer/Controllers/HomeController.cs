@@ -1,7 +1,9 @@
 using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace EShop.Web.Areas.Customer.Controllers;
 
@@ -14,15 +16,29 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
         return View(products);
     }
 
-    public IActionResult Details(int id)
+    public IActionResult Details(int productid)
     {
         ShoppingCart cart = new()
         {
-            Product = unitOfWork.Product.Get(p => p.Id == id,includeProperties: "Category"),
-            ProductId = id
+            Product = unitOfWork.Product.Get(p => p.Id == productid, includeProperties: "Category"),
+            ProductId = productid
         };
         
         return View(cart);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public IActionResult Details(ShoppingCart shoppingCart)
+    {
+        var claimsIdentity = User.Identity as ClaimsIdentity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        shoppingCart.ApplicationUserId = userId;
+
+        unitOfWork.ShoppingCart.Add(shoppingCart);
+        unitOfWork.Save();
+
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Privacy()
