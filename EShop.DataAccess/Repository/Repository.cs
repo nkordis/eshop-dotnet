@@ -20,9 +20,11 @@ public class Repository<T> : IRepository<T> where T : class
         dbSet.Add(entity);
     }
 
-    public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+    public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
     {
-        IQueryable<T> query = dbSet;
+
+        IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
+
         query = query.Where(filter);
         if (!string.IsNullOrEmpty(includeProperties))
         {
@@ -38,11 +40,11 @@ public class Repository<T> : IRepository<T> where T : class
     public IEnumerable<T> GetAll(string? includeProperties = null)
     {
         IQueryable<T> query = dbSet;
-        if(!string.IsNullOrEmpty(includeProperties))
+        if (!string.IsNullOrEmpty(includeProperties))
         {
             foreach (var property in includeProperties
-                .Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
-            { 
+                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
                 query = query.Include(property);
             }
         }
@@ -56,7 +58,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public void RemoveRange(IEnumerable<T> entities)
     {
-       dbSet.RemoveRange(entities);
+        dbSet.RemoveRange(entities);
     }
 }
 
