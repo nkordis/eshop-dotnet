@@ -1,6 +1,7 @@
 ﻿using EShop.DataAccess.Data;
 using EShop.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace EShop.DataAccess.Repository;
@@ -37,9 +38,15 @@ public class Repository<T> : IRepository<T> where T : class
         return query.FirstOrDefault();
     }
 
-    public IEnumerable<T> GetAll(string? includeProperties = null)
+    public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null, bool tracked = false)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();
+
+        if(filter != null)
+        {
+            query = query.Where(filter);
+        }
+        
         if (!string.IsNullOrEmpty(includeProperties))
         {
             foreach (var property in includeProperties
