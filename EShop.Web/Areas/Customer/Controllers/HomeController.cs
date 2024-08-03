@@ -23,7 +23,7 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
             Product = unitOfWork.Product.Get(p => p.Id == productid, includeProperties: "Category"),
             ProductId = productid
         };
-        
+
         return View(cart);
     }
 
@@ -36,14 +36,20 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
         shoppingCart.ApplicationUserId = userId;
 
         //check if shopping cart already exists
-        ShoppingCart cartFromDb = unitOfWork.ShoppingCart.Get(s => 
+        ShoppingCart cartFromDb = unitOfWork.ShoppingCart.Get(s =>
             s.ApplicationUserId == userId && s.ProductId == shoppingCart.ProductId);
-        
+
         if (cartFromDb == null)
         {
             unitOfWork.ShoppingCart.Add(shoppingCart);
             unitOfWork.Save();
+            TempData["success"] = "Product added to cart successfully!";
         }
+        else
+        {
+            TempData["info"] = "Product is already in the cart!";
+        }
+        
 
         return RedirectToAction(nameof(Index));
     }
