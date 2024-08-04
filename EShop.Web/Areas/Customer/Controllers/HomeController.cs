@@ -1,6 +1,9 @@
 using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
+using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -49,9 +52,9 @@ public class HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWo
         {
             TempData["info"] = "Product is already in the cart!";
         }
-        
 
-        return RedirectToAction(nameof(Index));
+
+        return RedirectToAction("Index", "Cart", new { area = SD.Role_Customer });
     }
 
     public IActionResult Privacy()
