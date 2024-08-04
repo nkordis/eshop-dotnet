@@ -12,7 +12,6 @@ public class OrderHeader
     [ForeignKey(nameof(ApplicationUserId))]
     [ValidateNever]
     public ApplicationUser ApplicationUser { get; set; }
-
     public DateTime OrderDate { get; set; }
     public DateTime ShippingDate { get; set; }
     public decimal OrderTotal { get; set; }

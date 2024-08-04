@@ -1,4 +1,5 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
+using EShop.Models.Models;
 using EShop.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,10 +19,11 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
 
         ShoppingCartVM = new()
         {
-            ShoppingCarts = unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId, includeProperties: "Product")
+            ShoppingCarts = unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId, includeProperties: "Product"),
+            OrderHeader = new()
         };
 
-        ShoppingCartVM.OrderTotal = ShoppingCartVM.ShoppingCarts.Sum(s => s.Product.ListPrice);
+        ShoppingCartVM.OrderHeader.OrderTotal = ShoppingCartVM.ShoppingCarts.Sum(s => s.Product.ListPrice);
 
         return View(ShoppingCartVM);
     }
@@ -37,6 +39,6 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
         unitOfWork.ShoppingCart.Remove(cartFromDb);
         unitOfWork.Save();
 
-        return RedirectToAction(nameof(Index));;
+        return RedirectToAction(nameof(Index)); ;
     }
 }
