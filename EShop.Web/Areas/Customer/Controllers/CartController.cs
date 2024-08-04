@@ -26,6 +26,11 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
         return View(ShoppingCartVM);
     }
 
+    public IActionResult Summary()
+    {
+        return View();
+    }
+
     public IActionResult Remove(int cartId)
     {
         var cartFromDb = unitOfWork.ShoppingCart.Get(c => c.Id == cartId);
