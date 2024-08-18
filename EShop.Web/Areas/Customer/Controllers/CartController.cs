@@ -67,10 +67,11 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
 
         ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
         ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+        ApplicationUser applicationUser = unitOfWork.ApplicationUser.Get(u => u.Id == userId);
 
         ShoppingCartVM.OrderHeader.OrderTotal = ShoppingCartVM.ShoppingCarts.Sum(s => s.Product.ListPrice);
 
-        if(ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+        if(applicationUser.CompanyId.GetValueOrDefault() == 0)
         {
             ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
             ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
@@ -95,7 +96,19 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
             unitOfWork.Save();
         }
 
-        return View(ShoppingCartVM);
+        if (applicationUser.CompanyId.GetValueOrDefault() == 0)
+        {
+            // regular customer account and we need to capture payment
+            // stripe payment
+        }
+
+        //return View(ShoppingCartVM);
+        return RedirectToAction(nameof(OrderConfirmation), new {id=ShoppingCartVM.OrderHeader.Id});
+    }
+
+    public IActionResult OrderConfirmation(int id)
+    {
+        return View(id);
     }
 
     public IActionResult Remove(int cartId)
