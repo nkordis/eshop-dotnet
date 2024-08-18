@@ -1,6 +1,7 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
 using EShop.Models.ViewModels;
+using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,6 +12,7 @@ namespace EShop.Web.Areas.Customer.Controllers;
 [Authorize]
 public class CartController(IUnitOfWork unitOfWork) : Controller
 {
+    [BindProperty]
     public ShoppingCartVM ShoppingCartVM { get; set; }
     public IActionResult Index()
     {
@@ -48,6 +50,50 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
         ShoppingCartVM.OrderHeader.PostalCode = ShoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
 
         ShoppingCartVM.OrderHeader.OrderTotal = ShoppingCartVM.ShoppingCarts.Sum(s => s.Product.ListPrice);
+
+        return View(ShoppingCartVM);
+    }
+
+    [HttpPost]
+    [ActionName("Summary")]
+    public IActionResult SummaryPost()
+    {
+        var claimsIdentity = User.Identity as ClaimsIdentity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+
+        ShoppingCartVM.ShoppingCarts = unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,
+            includeProperties: "Product");
+
+        ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+        ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+
+        ShoppingCartVM.OrderHeader.OrderTotal = ShoppingCartVM.ShoppingCarts.Sum(s => s.Product.ListPrice);
+
+        if(ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+        {
+            ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+            ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+        }
+        else
+        {
+            ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+            ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
+        }
+        unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+        unitOfWork.Save();
+
+        foreach (var cart in ShoppingCartVM.ShoppingCarts)
+        {
+            OrderDetail orderDetail = new()
+            {
+                ProductId = cart.ProductId,
+                OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+                Price = cart.Product.ListPrice,
+            };
+            unitOfWork.OrderDetail.Add(orderDetail);
+            unitOfWork.Save();
+        }
 
         return View(ShoppingCartVM);
     }
