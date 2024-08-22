@@ -1,8 +1,10 @@
 ﻿using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
+using EShop.Models.ViewModels;
 using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace EShop.Web.Areas.Admin.Controllers;
 
@@ -18,9 +20,28 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
     #region API CALLS
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll(string status)
     {
-        List<OrderHeader> objOrderHeaders = [.. unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser")];
+        IEnumerable<OrderHeader> objOrderHeaders = [.. unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser")];
+
+        switch (status)
+        {
+            case "pending":
+                objOrderHeaders = objOrderHeaders.Where(u => u.PaymentStatus == SD.PaymentStatusDelayedPayment);
+                break;
+            case "inprocess":
+                objOrderHeaders = objOrderHeaders.Where(u => u.PaymentStatus == SD.StatusInProcess);
+                break;
+            case "completed":
+                objOrderHeaders = objOrderHeaders.Where(u => u.PaymentStatus == SD.StatusShipped);
+                break;
+            case "approved":
+                objOrderHeaders = objOrderHeaders.Where(u => u.PaymentStatus == SD.StatusApproved);
+                break;
+            default:
+                break;
+        }
+
         return Json(new { data = objOrderHeaders });
     }
 
