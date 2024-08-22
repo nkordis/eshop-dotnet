@@ -17,6 +17,17 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
         return View();
     }
 
+    public IActionResult Details(int orderId)
+    {
+        OrderVM orderVM = new()
+        {
+            OrderHeader = unitOfWork.OrderHeader.Get(u => u.Id == orderId, includeProperties: "ApplicationUser"),
+            OrderDetails = unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == orderId, includeProperties: "Product")
+        };
+
+        return View(orderVM);
+    }
+
     #region API CALLS
 
     [HttpGet]
