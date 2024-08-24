@@ -32,7 +32,7 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = SD.Role_Admin+","+SD.Role_Employee)]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
     public IActionResult UpdateOrderDetail()
     {
         var orderHeaderFromDb = unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id);
@@ -55,7 +55,41 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
 
         TempData["Success"] = "Order Details Updated Successfully";
 
-        return RedirectToAction(nameof(Details), new {orderId=orderHeaderFromDb.Id});
+        return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.Id });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+    public IActionResult StartProcessing()
+    {
+        unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.Id, SD.StatusInProcess);
+        unitOfWork.Save();
+
+        TempData["Success"] = "Order Details Updated Successfully";
+
+        return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+    public IActionResult ShipOrder()
+    {
+        var orderHeader = unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id);
+        orderHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
+        orderHeader.Carrier = OrderVM.OrderHeader.Carrier;
+        orderHeader.OrderStatus = SD.StatusShipped;
+        orderHeader.ShippingDate = DateTime.Now;
+        if (orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
+        {
+            orderHeader.PaymentDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+        }
+
+        unitOfWork.OrderHeader.Update(orderHeader);
+        unitOfWork.Save();
+
+        TempData["Success"] = "Order Shipped Successfully";
+
+        return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
     }
 
     #region API CALLS
@@ -75,7 +109,7 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             objOrderHeaders = unitOfWork.OrderHeader
-                .GetAll(u=>u.ApplicationUserId == userId, includeProperties:"ApplicationUser");
+                .GetAll(u => u.ApplicationUserId == userId, includeProperties: "ApplicationUser");
         }
 
         switch (status)
