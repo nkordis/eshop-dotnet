@@ -4,11 +4,12 @@ using EShop.Models.ViewModels;
 using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EShop.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = SD.Role_Admin)]
+[Authorize]
 public class OrderController(IUnitOfWork unitOfWork) : Controller
 {
     [BindProperty]
@@ -62,7 +63,20 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
     [HttpGet]
     public IActionResult GetAll(string status)
     {
-        IEnumerable<OrderHeader> objOrderHeaders = [.. unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser")];
+        IEnumerable<OrderHeader> objOrderHeaders;
+
+        if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+        {
+            objOrderHeaders = [.. unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser")];
+        }
+        else
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            objOrderHeaders = unitOfWork.OrderHeader
+                .GetAll(u=>u.ApplicationUserId == userId, includeProperties:"ApplicationUser");
+        }
 
         switch (status)
         {
