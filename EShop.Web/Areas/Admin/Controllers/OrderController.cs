@@ -4,6 +4,7 @@ using EShop.Models.ViewModels;
 using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System.Security.Claims;
 
 namespace EShop.Web.Areas.Admin.Controllers;
@@ -88,6 +89,37 @@ public class OrderController(IUnitOfWork unitOfWork) : Controller
         unitOfWork.Save();
 
         TempData["Success"] = "Order Shipped Successfully";
+
+        return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+    public IActionResult CancelOrder()
+    {
+        var orderHeader = unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id);
+
+        if(orderHeader.PaymentStatus == SD.PaymentStatusApproved)
+        {
+            var options = new RefundCreateOptions
+            {
+                Reason=RefundReasons.RequestedByCustomer,
+                PaymentIntent=orderHeader.PaymentIntentId,
+            };
+
+            var service = new RefundService();
+            Refund refund = service.Create(options);
+
+            unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, SD.StatusCancelled, SD.StatusRefunded);
+        }
+        else
+        {
+            unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, SD.StatusCancelled, SD.StatusCancelled);
+        }
+
+        unitOfWork.Save();
+
+        TempData["Success"] = "Order Cancelled Successfully";
 
         return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
     }
