@@ -3,6 +3,7 @@ using EShop.Models.Models;
 using EShop.Models.ViewModels;
 using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using System.Security.Claims;
@@ -11,7 +12,7 @@ namespace EShop.Web.Areas.Customer.Controllers;
 
 [Area("Customer")]
 [Authorize]
-public class CartController(IUnitOfWork unitOfWork) : Controller
+public class CartController(IUnitOfWork unitOfWork, IEmailSender emailSender) : Controller
 {
     [BindProperty]
     public ShoppingCartVM ShoppingCartVM { get; set; }
@@ -154,6 +155,9 @@ public class CartController(IUnitOfWork unitOfWork) : Controller
                 unitOfWork.Save();
             }
         }
+
+        emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, "New Order - EShop",
+            $"<p>New Order Created - {orderHeader.Id}</p>");
 
         List<ShoppingCart> shoppingCarts = unitOfWork.ShoppingCart
             .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
