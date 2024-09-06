@@ -1,9 +1,11 @@
 ﻿using EShop.DataAccess.Data;
 using EShop.DataAccess.Repository.IRepository;
 using EShop.Models.Models;
+using EShop.Models.ViewModels;
 using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Web.Areas.Admin.Controllers;
@@ -15,6 +17,30 @@ public class UserController(ApplicationDbContext db) : Controller
     public IActionResult Index()
     {
         return View();
+    }
+
+    public IActionResult RoleManagment(string userId)
+    {
+        string RoleID = db.UserRoles.FirstOrDefault(u => u.UserId == userId).RoleId;
+
+        RoleManagementVM RoleVM = new RoleManagementVM()
+        {
+            ApplicationUser = db.ApplicationUsers.Include(u => u.Company).FirstOrDefault(u => u.Id == userId),
+            RoleList = db.Roles.Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Name
+            }),
+            CompanyList = db.Companies.Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            }),
+        };
+
+        RoleVM.ApplicationUser.Role = db.Roles.FirstOrDefault(u => u.Id == RoleID).Name;
+
+        return View(RoleVM);
     }
 
     #region API CALLS

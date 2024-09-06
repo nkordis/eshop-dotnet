@@ -29,7 +29,7 @@ function loadDataTable() {
 
                     return `<div class="text-center">
                                 ${lockUnlockButton}
-                                <a class="btn btn-danger text-white permission-btn" style="cursor:pointer; width:150px;"><i class="bi bi-pencil-square"></i> Permission</a>
+                                <a href="/admin/user/RoleManagment?userId=${data.id}" class="btn btn-danger text-white permission-btn" style="cursor:pointer; width:150px;"><i class="bi bi-pencil-square"></i> Permission</a>
                             </div>`;
                 },
                 "width": "25%"
