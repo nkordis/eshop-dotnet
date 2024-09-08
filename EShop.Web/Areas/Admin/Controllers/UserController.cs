@@ -4,6 +4,7 @@ using EShop.Models.Models;
 using EShop.Models.ViewModels;
 using EShop.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace EShop.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = SD.Role_Admin)]
-public class UserController(ApplicationDbContext db) : Controller
+public class UserController(ApplicationDbContext db, UserManager<ApplicationUser> userManager) : Controller
 {
     public IActionResult Index()
     {
@@ -41,6 +42,32 @@ public class UserController(ApplicationDbContext db) : Controller
         RoleVM.ApplicationUser.Role = db.Roles.FirstOrDefault(u => u.Id == RoleID).Name;
 
         return View(RoleVM);
+    }
+
+    [HttpPost]
+    public IActionResult RoleManagment(RoleManagementVM roleManagementVM)
+    {
+        string RoleID = db.UserRoles.FirstOrDefault(u => u.UserId == roleManagementVM.ApplicationUser.Id).RoleId;
+        string oldRole = db.Roles.FirstOrDefault(u => u.Id == RoleID).Name;
+
+        if(!(roleManagementVM.ApplicationUser.Role == oldRole))
+        {
+            ApplicationUser applicationUser = db.ApplicationUsers.FirstOrDefault(u => u.Id == roleManagementVM.ApplicationUser.Id);
+            if (roleManagementVM.ApplicationUser.Role == SD.Role_Company)
+            {
+                applicationUser.CompanyId = roleManagementVM.ApplicationUser.CompanyId;
+            }
+            if(oldRole == SD.Role_Company)
+            {
+                applicationUser.CompanyId = null;
+            }
+            db.SaveChanges();
+
+            userManager.RemoveFromRoleAsync(applicationUser, oldRole).GetAwaiter().GetResult();
+            userManager.AddToRoleAsync(applicationUser, roleManagementVM.ApplicationUser.Role).GetAwaiter().GetResult();
+        }
+
+        return RedirectToAction("Index");
     }
 
     #region API CALLS
