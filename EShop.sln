@@ -16,6 +16,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8D0CCA13-45C3-48CD-B933-BB0779D3A890}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{029132B3-951E-48D8-92B5-DED60929B7A1}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\Users\nikos\Downloads\eshop-main.PNG = ..\..\..\..\Users\nikos\Downloads\eshop-main.PNG
+		..\..\..\..\Users\nikos\Downloads\eshop-order.PNG = ..\..\..\..\Users\nikos\Downloads\eshop-order.PNG
+		..\..\..\..\Users\nikos\Downloads\eshop-stripe.PNG = ..\..\..\..\Users\nikos\Downloads\eshop-stripe.PNG
+		..\..\..\..\Users\nikos\Downloads\eshop-user-managment.PNG = ..\..\..\..\Users\nikos\Downloads\eshop-user-managment.PNG
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +51,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8D0CCA13-45C3-48CD-B933-BB0779D3A890} = {5F7FD4F0-4996-415F-9B5C-1752512C4FE8}
+		{029132B3-951E-48D8-92B5-DED60929B7A1} = {8D0CCA13-45C3-48CD-B933-BB0779D3A890}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F4826595-E1F5-40EB-8E4D-02A1DD6CC8EF}

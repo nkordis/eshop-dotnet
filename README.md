@@ -3,6 +3,13 @@
 ## Overview
 EShop is a full-fledged web application built using ASP.NET Core Razor Pages, Entity Framework, and SQL Server. It supports multiple user roles (Admin, Employee, Customer, and Company), and allows product browsing, order management, and role-based permissions.
 
+<p align="center">
+  <img src="docs/images/eshop-main.PNG" alt="eshop-main" width="300"/>
+  <img src="docs/images/eshop-order.PNG" alt="eshop-order" width="300"/>
+  <img src="docs/images/eshop-stripe.PNG" alt="eshop-stripe" width="300"/>
+  <img src="docs/images/eshop-user-managment.PNG" alt="eshop-user-managment" width="300"/>
+</p>
+
 Live Project: [EShop on Azure](https://eshop-dotnet-hwg4hacyc7bcaga6.northeurope-01.azurewebsites.net/)
 
 This project follows modern architectural patterns such as the Repository Pattern and Domain-Driven Design (DDD) to ensure scalability, clean code, and reusability.
